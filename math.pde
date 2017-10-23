@@ -1,4 +1,4 @@
-class Vec {
+class Vec implements Comparable<Vec> {
   public float x;
   public float y;
   
@@ -44,6 +44,14 @@ class Vec {
       
     Vec vec = (Vec)other;
     return Float.compare(x, vec.x) == 0 && Float.compare(y, vec.y) == 0;
+  }
+  
+   @Override
+  public int compareTo(Vec other) {
+    int result = Float.compare(y, other.y);
+    if (result == 0)
+      return Float.compare(other.x, x);
+    return result;
   }
 }
 

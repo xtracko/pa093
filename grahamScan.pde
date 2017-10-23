@@ -33,11 +33,6 @@ List<Vec> grahamScan(List<Vec> points) {
   return hull;
 }
 
-boolean ccw(Vec a, Vec b, Vec c) {
-  float cp = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-  return Float.compare(cp, 0) > 0;
-}
-
 void removeSimilarAngles(Vec pivot, List<Angle> angles) {
   for (int i = 1; i != angles.size();) {
     Angle a = angles.get(i-1);

@@ -4,12 +4,14 @@ String help = "(left mouse click) Add point\n"
             + "(r) Add 5 random points\n"
             + "(c) Clear canvas\n"
             + "(h) Gift-Wrapping hull\n" 
-            + "(g) Graham-Scan hull\n";
+            + "(g) Graham-Scan hull\n"
+            + "(t) Delaunay triangulation\n";
 
 enum State {
   DEFAULT,
   GW_HULL,
   GS_HULL,
+  TRIAG,
 };
 
 class App {
@@ -62,6 +64,10 @@ class App {
     case 'G':
       switch_state(State.GS_HULL);
       break;
+    case 't':
+    case 'T':
+      switch_state(State.TRIAG);
+      break;
     case 'l':
       addPoint(425, 543);
       addPoint(699, 381);
@@ -84,6 +90,10 @@ class App {
     case GS_HULL:
       text("Graham Scan", width / 2, 10);
       drawHull(grahamScan(points));
+      break;
+    case TRIAG:
+      text("Triangulation", width / 2, 10);
+      delaunayTriangulation(points);
       break;
     }
   }
