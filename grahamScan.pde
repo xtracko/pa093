@@ -1,27 +1,26 @@
 import java.util.List;
-import java.util.Iterator;
 
-List<Vec> grahamScan(List<Vec> points) {
+List<Point> compute_graham_scan(List<Point> points) {
   if (points.size() < 3)
     return new ArrayList();
   
-  Vec pivot = findPivot(points);
-  Vec xline = new Vec(pivot.x - 1, pivot.y);
+  Point pivot = Collections.max(points);
+  Point xline = new Point(pivot.x - 1, pivot.y);
   
-  List<Angle> angles = computeAngles(xline, pivot, points);
+  List<Angle> angles = compute_angles(xline, pivot, points);
   Collections.sort(angles);
-  removeSimilarAngles(pivot, angles);
+  remove_similar_angles(pivot, angles);
   
-  List<Vec> hull = new ArrayList();
+  List<Point> hull = new ArrayList();
   hull.add(pivot);
   hull.add(angles.get(0).c);
   
   for (Angle angle: angles.subList(1, angles.size())) {
-    Vec a = hull.get(hull.size() - 2);
-    Vec b = hull.get(hull.size() - 1);
-    Vec c = angle.c;
+    Point a = hull.get(hull.size() - 2);
+    Point b = hull.get(hull.size() - 1);
+    Point c = angle.c;
        
-    while (ccw(a, b, c)) {
+    while (is_ccw(a, b, c)) {
       hull.remove(hull.size() - 1);
         a = hull.get(hull.size() - 2);
         b = hull.get(hull.size() - 1);
@@ -33,7 +32,7 @@ List<Vec> grahamScan(List<Vec> points) {
   return hull;
 }
 
-void removeSimilarAngles(Vec pivot, List<Angle> angles) {
+private void remove_similar_angles(Point pivot, List<Angle> angles) {
   for (int i = 1; i != angles.size();) {
     Angle a = angles.get(i-1);
     Angle b = angles.get(i);
@@ -43,8 +42,8 @@ void removeSimilarAngles(Vec pivot, List<Angle> angles) {
       continue;
     }
     
-    float da = distance(pivot, a.c);
-    float db = distance(pivot, b.c);
+    float da = pivot.distance(a.c);
+    float db = pivot.distance(b.c);
     angles.remove((Float.compare(da, db) < 0) ? a : b);
   }
 }

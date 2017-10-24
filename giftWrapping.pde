@@ -1,21 +1,22 @@
 import java.util.List;
 
-List<Vec> giftWrapping(List<Vec> points) {
+List<Point> compute_gift_wrapping(List<Point> points) {
   if (points.size() < 3)
     return new ArrayList();
     
-  Vec pivot = findPivot(points);
+  Point pivot = Collections.max(points);
   
-  List<Vec> hull = new ArrayList();
-  List<Vec> work = new ArrayList(points);
+  List<Point> hull = new ArrayList();
+  List<Point> work = new ArrayList(points);
   hull.add(pivot);
   work.remove(pivot);
   
-  Vec a = new Vec(pivot.x - 10, pivot.y);
-  Vec b = pivot;
+  Point a = new Point(pivot.x - 10, pivot.y);
+  Point b = pivot;
   
   do {
-    Vec c = findMinimalAngle(a, b, points).c;
+    Angle minimal_angle = Collections.min(compute_angles(a, b, points));
+    Point c = minimal_angle.c;
     hull.add(c);
     work.remove(c);
     
