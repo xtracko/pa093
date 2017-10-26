@@ -47,3 +47,13 @@ private void remove_similar_angles(Point pivot, List<Angle> angles) {
     angles.remove((Float.compare(da, db) < 0) ? a : b);
   }
 }
+
+void draw_graham_scan(List<Point> points) {
+  noFill();
+  stroke(255, 85, 85);
+  
+  beginShape();
+  for (Point p : compute_graham_scan(points))
+    vertex(p.x, p.y);
+  endShape();
+}

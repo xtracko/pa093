@@ -75,18 +75,18 @@ void draw() {
   case DEFAULT:
     break;
   case GW_HULL:
-    canvas.draw_gift_wrapping();
+    draw_gift_wrapping(canvas.get_points());
     break;
   case GS_HULL:
-    canvas.draw_graham_scan();
+    draw_graham_scan(canvas.get_points());
     break;
   case DE_TRIAG:
-    canvas.draw_delaunay_triangulation();
+    draw_delaunay_triangulation(canvas.get_points());
     break;
   }
+  canvas.draw_shape();
   
   draw_help();
-  //draw_variable("Tool: ", tool.toString(), 20, 20);
   draw_variable("Mode: ", mode.toString(), 20, 35);
 }
 
@@ -95,4 +95,12 @@ void draw_help() {
   
   fill(0);
   text(help, position, 20);
+}
+
+void draw_variable(String name, String value, float x, float y) {
+  fill(0);
+  text(name, x, y);
+  
+  fill(255, 85, 85);
+  text(value, x + textWidth(name), y);
 }

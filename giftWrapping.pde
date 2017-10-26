@@ -26,3 +26,13 @@ List<Point> compute_gift_wrapping(List<Point> points) {
   } while (b != pivot);    
   return hull;
 }
+
+void draw_gift_wrapping(List<Point> points) {
+  noFill();
+  stroke(255, 85, 85);
+  
+  beginShape();
+  for (Point p : compute_gift_wrapping(points))
+    vertex(p.x, p.y);
+  endShape();
+}
