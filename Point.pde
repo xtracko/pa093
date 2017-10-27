@@ -1,6 +1,7 @@
 class Point implements Comparable<Point> {
   public float x;
   public float y;
+  public boolean flag = false;
   
   public Point(float x, float y) {
     this.x = x;

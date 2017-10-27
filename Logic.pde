@@ -15,3 +15,17 @@ enum Mode {
     throw new IllegalArgumentException("undefined");
   }
 }
+
+enum Tool {
+  POINT,
+  POLYGON;
+  
+  @Override
+  public String toString() {
+    switch(this) {
+    case POINT: return "Point";
+    case POLYGON: return "Polygon";
+    }
+    throw new IllegalArgumentException("undefined");
+  }
+}

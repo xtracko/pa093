@@ -1,6 +1,7 @@
 String help = "(left mouse click) Add point\n"
             + "(right mouse click) Remove point\n"
             + "(mouse drag) Move point\n"
+            + "(space) Switch tool (points/polygons) \n"
             + "(r) Add 5 random points\n"
             + "(c) Clear canvas\n"
             + "(d) Default mode\n"
@@ -9,6 +10,7 @@ String help = "(left mouse click) Add point\n"
             + "(t) Delaunay triangulation\n";
 
 Mode mode = Mode.DEFAULT;
+Tool tool = Tool.POINT;
 Canvas canvas = new Canvas();
 
 void setup() {
@@ -63,6 +65,9 @@ void keyPressed() {
   case 'T':
     mode = Mode.DE_TRIAG;
     break;
+  case ' ':
+    tool = (tool == Tool.POINT) ? Tool.POLYGON : Tool.POINT;
+    break;
   }
   redraw();
 }
@@ -71,6 +76,9 @@ void draw() {
   background(255);
   
   canvas.draw_points();
+  if (tool == Tool.POLYGON)
+    canvas.draw_shape();
+  
   switch (mode) {
   case DEFAULT:
     break;
@@ -81,13 +89,16 @@ void draw() {
     draw_graham_scan(canvas.get_points());
     break;
   case DE_TRIAG:
-    draw_delaunay_triangulation(canvas.get_points());
+    List<Point> input = canvas.get_points();
+    if (tool == Tool.POINT)
+      input = compute_graham_scan(input);
+    draw_delaunay_triangulation(input);
     break;
   }
-  canvas.draw_shape();
   
   draw_help();
   draw_variable("Mode: ", mode.toString(), 20, 35);
+  draw_variable("Tool: ", tool.toString(), 20, 50);
 }
 
 void draw_help() {

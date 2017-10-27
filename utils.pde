@@ -4,15 +4,20 @@ class Stack<E> {
   public boolean isEmpty() {
     return data.isEmpty();
   }
+  
+  public int size() {
+    return data.size();
+  }
     
   public E pop() {
-    E e = data.get(data.size() - 1);
-    data.remove(e);
+    final int i = data.size() - 1;
+    final E e = data.get(i);
+    data.remove(i);
     return e;
   }
   
   public void push(E e) {
-    data.add(e);
+    assert(data.add(e));
   }
 }
 
