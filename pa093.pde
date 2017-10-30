@@ -90,8 +90,10 @@ void draw() {
     break;
   case DE_TRIAG:
     List<Point> input = canvas.get_points();
-    if (tool == Tool.POINT)
+    if (tool == Tool.POINT) {
+      draw_graham_scan(canvas.get_points());
       input = compute_graham_scan(input);
+    }
     draw_delaunay_triangulation(input);
     break;
   }
