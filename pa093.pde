@@ -7,7 +7,8 @@ String help = "(left mouse click) Add point\n"
             + "(d) Default mode\n"
             + "(h) Gift-Wrapping hull\n" 
             + "(g) Graham-Scan hull\n"
-            + "(t) Delaunay triangulation\n";
+            + "(t) Delaunay triangulation\n"
+            + "(k) Kd-Tree\n";
 
 Mode mode = Mode.DEFAULT;
 Tool tool = Tool.POINT;
@@ -65,6 +66,10 @@ void keyPressed() {
   case 'T':
     mode = Mode.DE_TRIAG;
     break;
+  case 'k':
+  case 'K':
+    mode = Mode.KD_TREE;
+    break;
   case ' ':
     tool = (tool == Tool.POINT) ? Tool.POLYGON : Tool.POINT;
     break;
@@ -95,6 +100,9 @@ void draw() {
       input = compute_graham_scan(input);
     }
     draw_delaunay_triangulation(input);
+    break;
+  case KD_TREE:
+    draw_kd_tree(canvas.get_points());
     break;
   }
   

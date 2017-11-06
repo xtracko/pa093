@@ -25,3 +25,13 @@ boolean is_ccw(Point a, Point b, Point c) {
   float cp = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
   return Float.compare(cp, 0) > 0;
 }
+
+class Rect {
+  final public Point a;
+  final public Point b;
+  
+  Rect(Point a, Point b) {
+    this.a = a;
+    this.b = b;
+  }
+}

@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 class Point implements Comparable<Point> {
   public float x;
   public float y;
@@ -33,4 +35,18 @@ class Point implements Comparable<Point> {
   public float norm() { return sqrt(x * x + y * y); }
   
   public float distance(Point other) { return sub(other).norm(); }
+}
+
+class XComparator implements Comparator<Point> {
+  @Override
+  public int compare(Point lhs, Point rhs) {
+    return Float.compare(lhs.x, rhs.x);
+  }
+}
+
+class YComparator implements Comparator<Point> {
+  @Override
+  public int compare(Point lhs, Point rhs) {
+    return Float.compare(lhs.y, rhs.y);
+  }
 }

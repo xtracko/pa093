@@ -2,7 +2,8 @@ enum Mode {
   DEFAULT,
   GW_HULL,
   GS_HULL,
-  DE_TRIAG;
+  DE_TRIAG,
+  KD_TREE;
   
   @Override
   public String toString() {
@@ -11,6 +12,7 @@ enum Mode {
     case GW_HULL: return "Gift-Wrapping hull";
     case GS_HULL: return "Graham-Scan hull";
     case DE_TRIAG: return "Delaunay triangulation";
+    case KD_TREE: return "Kd-Tree";
     }
     throw new IllegalArgumentException("undefined");
   }
