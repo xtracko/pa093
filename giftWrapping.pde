@@ -1,6 +1,7 @@
+import java.util.Collections;
 import java.util.List;
 
-List<Point> compute_gift_wrapping(List<Point> points) {
+List<Point> giftWrapping(List<Point> points) {
   if (points.size() < 3)
     return new ArrayList();
     
@@ -15,24 +16,28 @@ List<Point> compute_gift_wrapping(List<Point> points) {
   Point b = pivot;
   
   do {
-    Angle minimal_angle = Collections.min(compute_angles(a, b, points));
-    Point c = minimal_angle.c;
+    Point c = minimalAngle(a, b, points);
     hull.add(c);
     work.remove(c);
     
-    
     a = b;
     b = c;
-  } while (b != pivot);    
+  } while (b != pivot);
+
   return hull;
 }
 
-void draw_gift_wrapping(List<Point> points) {
-  noFill();
-  stroke(255, 85, 85);
-  
-  beginShape();
-  for (Point p : compute_gift_wrapping(points))
-    vertex(p.x, p.y);
-  endShape();
+Point minimalAngle(Point a, Point b, List<Point> cs) {
+  Point point = null;
+  float minimum = Float.MAX_VALUE;
+
+  for (Point c : cs) {
+    float angle = computeAngle(a, b, c);
+    if (angle < minimum) {
+      minimum = angle;
+      point = c;
+    }
+  }
+
+  return point;
 }

@@ -1,127 +1,205 @@
-String help = "(left mouse click) Add point\n"
-            + "(right mouse click) Remove point\n"
-            + "(mouse drag) Move point\n"
-            + "(space) Switch tool (points/polygons) \n"
-            + "(r) Add 5 random points\n"
-            + "(c) Clear canvas\n"
-            + "(d) Default mode\n"
-            + "(h) Gift-Wrapping hull\n" 
-            + "(g) Graham-Scan hull\n"
-            + "(t) Delaunay triangulation\n"
-            + "(k) Kd-Tree\n";
+enum Tool {
+  POINTS,
+  POLYGONS;
+}
 
-Mode mode = Mode.DEFAULT;
-Tool tool = Tool.POINT;
-Canvas canvas = new Canvas();
+enum Algorithm {
+  NONE,
+  GW_HULL,
+  GS_HULL,
+  SL_TRIANGULATION,
+  DE_TRIANGULATION,
+  KD_TREE;
+}
+
+
+final color NORMAL_COLOR = color(233, 30, 99);
+final color LIGHT_COLOR = color(255, 96, 144);
+final color DARK_COLOR = color(176, 0, 58);
+
+Points points = new Points();
+Tool tool = Tool.POINTS;
+Algorithm algorithm = Algorithm.NONE;
 
 void setup() {
   size(1000, 800);
-  textMode(SHAPE);
-}
-
-void mouseClicked() {
-  switch (mouseButton) {
-  case LEFT:
-    canvas.add_point(mouseX, mouseY);
-    break;
-  case RIGHT:
-    canvas.remove_point(mouseX, mouseY);
-    break;
-  }
-  redraw();
-}
-
-void mouseDragged() {
-  Point selected = canvas.select_point(pmouseX, pmouseY);
-  if (selected != null) {
-    selected.x = mouseX;
-    selected.y = mouseY;
-  }
-  redraw();
-}
-
-void keyPressed() {
-  switch (key) {
-  case 'r':
-  case 'R':
-    canvas.add_random_points(5);
-    break;
-  case 'c':
-  case 'C':
-    canvas.cleanPoints();
-    break;
-  case 'd':
-  case 'D':
-    mode = Mode.DEFAULT;
-    break;
-  case 'h':
-  case 'H':
-    mode = Mode.GW_HULL;
-    break;
-  case 'g':
-  case 'G':
-    mode = Mode.GS_HULL;
-    break;
-  case 't':
-  case 'T':
-    mode = Mode.DE_TRIAG;
-    break;
-  case 'k':
-  case 'K':
-    mode = Mode.KD_TREE;
-    break;
-  case ' ':
-    tool = (tool == Tool.POINT) ? Tool.POLYGON : Tool.POINT;
-    break;
-  }
-  redraw();
 }
 
 void draw() {
   background(255);
   
-  canvas.draw_points();
-  if (tool == Tool.POLYGON)
-    canvas.draw_shape();
-  
-  switch (mode) {
-  case DEFAULT:
-    break;
-  case GW_HULL:
-    draw_gift_wrapping(canvas.get_points());
-    break;
-  case GS_HULL:
-    draw_graham_scan(canvas.get_points());
-    break;
-  case DE_TRIAG:
-    List<Point> input = canvas.get_points();
-    if (tool == Tool.POINT) {
-      draw_graham_scan(canvas.get_points());
-      input = compute_graham_scan(input);
+  if (tool == Tool.POINTS) {
+    drawSubcaption("Points");
+    drawPoints(points);
+  } else {
+    drawSubcaption("Polygons");
+    drawPoints(points);
+    drawClosedPolygon(points);
+  }
+
+  switch (algorithm) {
+    case NONE: {
+      drawCaption("none");
+      break;
     }
-    draw_delaunay_triangulation(input);
-    break;
-  case KD_TREE:
-    draw_kd_tree(canvas.get_points());
-    break;
+    case GW_HULL: {
+      drawCaption("Gift-Wrapping");
+      drawPolygon(giftWrapping(points));
+      break;
+    }
+    case GS_HULL: {
+      drawCaption("Graham-Scan");
+      drawPolygon(grahamScan(points));
+      break;
+    }
+    case SL_TRIANGULATION: {
+      drawCaption("Sweep-Lane");
+      List<Point> polygon = grahamScan(points);
+      drawPolygon(polygon);
+      drawLines(sweepLane(polygon));
+      break;
+    }
+    case DE_TRIANGULATION: {
+      drawCaption("Delaunay");
+      break;
+    }
+    case KD_TREE: {
+      drawCaption("KD-Tree");
+      drawKdTree(kdTree(points));
+      break;
+    }
   }
   
-  draw_help();
-  draw_variable("Mode: ", mode.toString(), 20, 35);
-  draw_variable("Tool: ", tool.toString(), 20, 50);
+  drawHelp();
 }
 
-void draw_help() {
-  float position = width - textWidth(help) - 20;
+void mouseClicked() {
+  switch (mouseButton) {
+  case LEFT: points.add(mouseX, mouseY); break;
+  case RIGHT: points.remove(mouseX, mouseY); break;
+  }
   
-  fill(0);
-  text(help, position, 20);
+  redraw();
 }
 
-void draw_variable(String name, String value, float x, float y) {
-  fill(0);
-  text(name, x, y);
+void mouseDragged() {
+  Point selected = points.find(pmouseX, pmouseY);
+  if (selected != null) {
+    selected.x = mouseX;
+    selected.y = mouseY;
+  }
+
+  redraw();
+}
+
+void keyPressed() {
+  switch (key) {
+  case 'p': tool = (tool == Tool.POINTS) ? Tool.POLYGONS : Tool.POINTS; break;
+  case 'r': points.addRandom(5); break;
+  case 'c': points.clear(); break;
+  case 'n': algorithm = Algorithm.NONE; break;
+  case 'h': algorithm = Algorithm.GW_HULL; break;
+  case 'g': algorithm = Algorithm.GS_HULL; break;
+  case 't': algorithm = Algorithm.SL_TRIANGULATION; break;
+  case 'd': algorithm = Algorithm.DE_TRIANGULATION; break;
+  case 'k': algorithm = Algorithm.KD_TREE; break;
+  }
   
-  fill(255, 85, 85);
-  text(value, x + textWidth(name), y);
+  redraw();
+}
+
+void drawHelp() {
+  String help = "[left click] add point\n"
+              + "[right click] remove point\n"
+              + "[mouse drag] move point\n"
+              + "[r] add 5 random points\n"
+              + "[c] clear canvas\n"
+              + "[p] switch points or polygons\n"
+              + "[n] none\n"
+              + "[h] Gift-Wrapping\n" 
+              + "[g] Graham-Scan\n"
+              + "[t] Sweeping-Lane\n"
+              + "[d] Delaunay\n"
+              + "[k] KD-Tree\n";
+  fill(0);
+  text(help, width - textWidth(help) - 20, 20);
+}
+
+void drawCaption(String caption) {
+  fill(NORMAL_COLOR);
+  text(caption, 20, 20);
+}
+
+void drawSubcaption(String subcaption) {
+  fill(LIGHT_COLOR);
+  text(subcaption, 20, 45);
+}
+
+void drawPoints(List<Point> points) {
+  fill(0);
+  stroke(0);
+
+  for (Point p : points)
+    ellipse(p.x, p.y, 8, 8);
+}
+
+void drawPolygon(List<Point> points) {
+  noFill();
+  stroke(DARK_COLOR);
+  
+  beginShape();
+  for (Point p: points)
+    vertex(p.x, p.y);
+  endShape();
+}
+
+void drawClosedPolygon(List<Point> points) {
+  noFill();
+  stroke(DARK_COLOR);
+  
+  beginShape();
+    for (Point p: points) {
+      vertex(p.x, p.y);
+    }
+    if (points.size() > 2) {
+      Point front = points.get(0);
+      vertex(front.x, front.y);
+    }
+  endShape();
+}
+
+void drawLines(List<Point> points) {
+  noFill();
+  stroke(DARK_COLOR);
+  
+  beginShape(LINES);
+  for (Point p : points)
+    vertex(p.x, p.y);
+  endShape();
+}
+
+class Points extends ArrayList<Point> {  
+  Point find(float x, float y) {
+    for (Point p : points)
+      if (p.distance(new Point(x, y)) <= 4)
+        return p;
+    return null;
+  }
+  
+  void add(float x, float y) {
+    super.add(new Point(x, y));
+  }
+  
+  void remove(float x, float y) {
+    super.remove(find(x, y));
+  }
+  
+  void addRandom(int n) {
+    float span = 6;
+    for (int i = 0; i != n; ++i) {
+      int x = (int)(randomGaussian() * (width / span)) + (width / 2);
+      int y = (int)(randomGaussian() * (height / span)) + (height / 2);
+      add(new Point(x, y));
+    }
+  }
 }

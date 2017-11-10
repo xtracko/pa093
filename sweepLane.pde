@@ -1,13 +1,13 @@
 import java.util.List;
 
-List<Point> compute_delaunay_triangulation(List<Point> points) {
+List<Point> sweepLane(List<Point> points) {
   if (points.size() <  3)
     return new ArrayList();
   
   List<Point> ordering = new ArrayList(points);
   Collections.sort(ordering);
   
-  divide_to_left_and_right_path(points, ordering);
+  divideToLeftAndRightPath(points, ordering);
     
   Stack<Point> stack = new Stack();
   stack.push(ordering.get(0));
@@ -19,7 +19,7 @@ List<Point> compute_delaunay_triangulation(List<Point> points) {
     
     if (p.flag == top.flag) {      
       Point q = stack.pop();
-      while(!stack.isEmpty() && !is_ccw(p, top, q)) {
+      while(!stack.isEmpty() && !isCcw(p, top, q)) {
         triangulation.add(p);
         triangulation.add(q);
         top = q;
@@ -42,7 +42,7 @@ List<Point> compute_delaunay_triangulation(List<Point> points) {
   return triangulation;
 }
 
-void divide_to_left_and_right_path(List<Point> points, List<Point> ordering) {
+void divideToLeftAndRightPath(List<Point> points, List<Point> ordering) {
   final int size = points.size();
   final int bot_index = points.indexOf(ordering.get(0));
   final int top_index = points.indexOf(ordering.get(ordering.size() - 1));
@@ -55,12 +55,24 @@ void divide_to_left_and_right_path(List<Point> points, List<Point> ordering) {
   }
 }
 
-void draw_delaunay_triangulation(List<Point> points) {
-  noFill();
-  stroke(255, 85, 85);
+class Stack<E> {
+  private List<E> data = new ArrayList();
   
-  beginShape(LINES);
-  for (Point p : compute_delaunay_triangulation(points))
-    vertex(p.x, p.y);
-  endShape();
+  public boolean isEmpty() {
+    return data.isEmpty();
+  }
+  
+  public int size() {
+    return data.size();
+  }
+    
+  public E pop() {
+    E item = data.get(data.size() - 1);
+    data.remove(item);
+    return item;
+  }
+  
+  public void push(E e) {
+    assert(data.add(e));
+  }
 }

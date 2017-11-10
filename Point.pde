@@ -50,3 +50,16 @@ class YComparator implements Comparator<Point> {
     return Float.compare(lhs.y, rhs.y);
   }
 }
+
+float computeAngle(Point a, Point b, Point c) {
+  Point l1 = b.sub(a);
+  Point l2 = c.sub(b);
+  float mag = l1.norm() * l2.norm();
+  
+  return acos(l1.dot(l2) / mag);
+}
+
+boolean isCcw(Point a, Point b, Point c) {
+  float cp = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  return Float.compare(cp, 0) > 0;
+}

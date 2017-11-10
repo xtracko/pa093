@@ -1,15 +1,15 @@
 import java.util.List;
 
-List<Point> compute_graham_scan(List<Point> points) {
+List<Point> grahamScan(List<Point> points) {
   if (points.size() < 3)
     return new ArrayList();
   
   Point pivot = Collections.max(points);
   Point xline = new Point(pivot.x - 1, pivot.y);
   
-  List<Angle> angles = compute_angles(xline, pivot, points);
+  List<Angle> angles = computeAngles(xline, pivot, points);
   Collections.sort(angles);
-  remove_similar_angles(pivot, angles);
+  removeSimilarAngles(pivot, angles);
   
   List<Point> hull = new ArrayList();
   hull.add(pivot);
@@ -20,7 +20,7 @@ List<Point> compute_graham_scan(List<Point> points) {
     Point b = hull.get(hull.size() - 1);
     Point c = angle.c;
        
-    while (is_ccw(a, b, c)) {
+    while (isCcw(a, b, c)) {
       hull.remove(hull.size() - 1);
         a = hull.get(hull.size() - 2);
         b = hull.get(hull.size() - 1);
@@ -28,11 +28,11 @@ List<Point> compute_graham_scan(List<Point> points) {
     
     hull.add(c);
   }
-  
+
   return hull;
 }
 
-private void remove_similar_angles(Point pivot, List<Angle> angles) {
+void removeSimilarAngles(Point pivot, List<Angle> angles) {
   for (int i = 1; i != angles.size();) {
     Angle a = angles.get(i-1);
     Angle b = angles.get(i);
@@ -48,12 +48,37 @@ private void remove_similar_angles(Point pivot, List<Angle> angles) {
   }
 }
 
-void draw_graham_scan(List<Point> points) {
-  noFill();
-  stroke(255, 85, 85);
+List<Angle> computeAngles(Point a, Point b, List<Point> cs) {
+  List<Angle> angles = new ArrayList();
+  for (Point c : cs)
+    angles.add(new Angle(a, b, c));
+  return angles;
+}
+
+class Angle implements Comparable<Angle> {
+  public float value;
+  public Point a;
+  public Point b;
+  public Point c;
   
-  beginShape();
-  for (Point p : compute_graham_scan(points))
-    vertex(p.x, p.y);
-  endShape();
+  public Angle(Point a, Point b, Point c) {
+    this.value = computeAngle(a, b, c);
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
+  
+  @Override
+  public int compareTo(Angle other) {
+    return Float.compare(this.value, other.value);
+  }
+  
+  @Override
+  public boolean equals(Object other) {
+    if (this == other)
+        return true;      
+    if (other == null || !(other instanceof Angle))
+      return false;
+    return compareTo((Angle)other) == 0;
+  }
 }
