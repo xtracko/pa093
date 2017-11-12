@@ -1,6 +1,6 @@
 import java.util.List;
 
-List<Point> sweepLane(List<Point> points) {
+List<Edge> sweepLane(List<Point> points) {
   if (points.size() <  3)
     return new ArrayList();
   
@@ -13,26 +13,23 @@ List<Point> sweepLane(List<Point> points) {
   stack.push(ordering.get(0));
   stack.push(ordering.get(1));
   
-  List<Point> triangulation = new ArrayList();
+  List<Edge> triangulation = new ArrayList();
   for (Point p : ordering.subList(2, ordering.size())) {
     Point top = stack.pop();
     
-    if (p.flag == top.flag) {      
+    if (p.flag == top.flag) {
       Point q = stack.pop();
       while(!stack.isEmpty() && !isCcw(p, top, q)) {
-        triangulation.add(p);
-        triangulation.add(q);
+        triangulation.add(new Edge(p, q));
         top = q;
         q = stack.pop();
       }
       stack.push(q);
     } else {
-      triangulation.add(p);
-      triangulation.add(top);
+      triangulation.add(new Edge(p, top));
       
       while (!stack.isEmpty()) {
-        triangulation.add(p);
-        triangulation.add(stack.pop());
+        triangulation.add(new Edge(p, stack.pop()));
       }
     }
     

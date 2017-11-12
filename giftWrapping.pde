@@ -4,30 +4,27 @@ import java.util.List;
 List<Point> giftWrapping(List<Point> points) {
   if (points.size() < 3)
     return new ArrayList();
-    
-  Point pivot = Collections.max(points);
   
+  Point pivot = Collections.max(points);
+
   List<Point> hull = new ArrayList();
-  List<Point> work = new ArrayList(points);
   hull.add(pivot);
-  work.remove(pivot);
   
   Point a = new Point(pivot.x - 10, pivot.y);
   Point b = pivot;
+  Point c = find_minimal_angle(a, b, points);
   
-  do {
-    Point c = minimalAngle(a, b, points);
+  while(c != pivot) {
     hull.add(c);
-    work.remove(c);
-    
+
     a = b;
     b = c;
-  } while (b != pivot);
-
+    c = find_minimal_angle(a, b, points);
+  }
   return hull;
 }
 
-Point minimalAngle(Point a, Point b, List<Point> cs) {
+Point find_minimal_angle(Point a, Point b, List<Point> cs) {
   Point point = null;
   float minimum = Float.MAX_VALUE;
 

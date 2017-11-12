@@ -59,7 +59,40 @@ float computeAngle(Point a, Point b, Point c) {
   return acos(l1.dot(l2) / mag);
 }
 
+float crossProduct(Point a, Point b, Point c) {
+  return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+}
+
 boolean isCcw(Point a, Point b, Point c) {
-  float cp = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-  return Float.compare(cp, 0) > 0;
+  return Float.compare(crossProduct(a, b, c), 0) > 0;
+}
+
+Point closerPoint(Point from, Point toA, Point toB) {
+  float dA = from.distance(toA);
+  float dB = from.distance(toB);
+  return (Float.compare(dA, dB) < 0) ? toA : toB;
+}
+
+class Edge {
+    Point a;
+    Point b;
+
+    Edge(Point a, Point b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    Edge reverse() {
+        return new Edge(b, a);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;      
+        if (!(other instanceof Edge))
+            return false;
+        Edge edge = (Edge)other;
+        return a.equals(edge.a) && b.equals(edge.b);
+    }
 }

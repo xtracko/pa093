@@ -28,14 +28,7 @@ void setup() {
 void draw() {
   background(255);
   
-  if (tool == Tool.POINTS) {
-    drawSubcaption("Points");
-    drawPoints(points);
-  } else {
-    drawSubcaption("Polygons");
-    drawPoints(points);
-    drawClosedPolygon(points);
-  }
+  drawPoints(points);
 
   switch (algorithm) {
     case NONE: {
@@ -53,14 +46,22 @@ void draw() {
       break;
     }
     case SL_TRIANGULATION: {
-      drawCaption("Sweep-Lane");
-      List<Point> polygon = grahamScan(points);
-      drawPolygon(polygon);
-      drawLines(sweepLane(polygon));
+      drawCaption("Sweep-Lane (press [p] to toggle between points and polygons)");
+      if (tool == Tool.POINTS) {
+        drawSubcaption("Points");
+        List<Point> hull = grahamScan(points);
+        drawPolygon(hull);
+        drawEdges(sweepLane(hull));
+      } else {
+        drawSubcaption("Polygons");
+        drawPolygon(points);
+        drawEdges(sweepLane(points));
+      }
       break;
     }
     case DE_TRIANGULATION: {
       drawCaption("Delaunay");
+      drawEdges(delaunay(points));
       break;
     }
     case KD_TREE: {
@@ -94,7 +95,6 @@ void mouseDragged() {
 
 void keyPressed() {
   switch (key) {
-  case 'p': tool = (tool == Tool.POINTS) ? Tool.POLYGONS : Tool.POINTS; break;
   case 'r': points.addRandom(5); break;
   case 'c': points.clear(); break;
   case 'n': algorithm = Algorithm.NONE; break;
@@ -103,6 +103,10 @@ void keyPressed() {
   case 't': algorithm = Algorithm.SL_TRIANGULATION; break;
   case 'd': algorithm = Algorithm.DE_TRIANGULATION; break;
   case 'k': algorithm = Algorithm.KD_TREE; break;
+  case 'p':
+    if (algorithm == Algorithm.SL_TRIANGULATION)
+      tool = (tool == Tool.POINTS) ? Tool.POLYGONS : Tool.POINTS;
+    break;
   }
   
   redraw();
@@ -150,32 +154,19 @@ void drawPolygon(List<Point> points) {
   beginShape();
   for (Point p: points)
     vertex(p.x, p.y);
-  endShape();
+  endShape(CLOSE);
 }
 
-void drawClosedPolygon(List<Point> points) {
-  noFill();
-  stroke(DARK_COLOR);
-  
-  beginShape();
-    for (Point p: points) {
-      vertex(p.x, p.y);
-    }
-    if (points.size() > 2) {
-      Point front = points.get(0);
-      vertex(front.x, front.y);
-    }
-  endShape();
-}
+void drawEdges(List<Edge> edges) {
+    noFill();
+    stroke(DARK_COLOR);
 
-void drawLines(List<Point> points) {
-  noFill();
-  stroke(DARK_COLOR);
-  
-  beginShape(LINES);
-  for (Point p : points)
-    vertex(p.x, p.y);
-  endShape();
+    beginShape(LINES);
+    for (Edge edge : edges) {
+        vertex(edge.a.x, edge.a.y);
+        vertex(edge.b.x, edge.b.y);
+    }
+    endShape();
 }
 
 class Points extends ArrayList<Point> {  
