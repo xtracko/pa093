@@ -9,7 +9,8 @@ enum Algorithm {
   GS_HULL,
   SL_TRIANGULATION,
   DE_TRIANGULATION,
-  KD_TREE;
+  KD_TREE,
+  VO_DIAGRAM,
 }
 
 
@@ -61,12 +62,15 @@ void draw() {
     }
     case DE_TRIANGULATION: {
       drawCaption("Delaunay");
-      drawEdges(delaunay(points));
+      drawTriangles(delaunay(points));
       break;
     }
     case KD_TREE: {
       drawCaption("KD-Tree");
       drawKdTree(kdTree(points));
+      break;
+    }
+    case VO_DIAGRAM: {
       break;
     }
   }
@@ -103,6 +107,7 @@ void keyPressed() {
   case 't': algorithm = Algorithm.SL_TRIANGULATION; break;
   case 'd': algorithm = Algorithm.DE_TRIANGULATION; break;
   case 'k': algorithm = Algorithm.KD_TREE; break;
+  case 'v': algorithm = Algorithm.VO_DIAGRAM; break;
   case 'p':
     if (algorithm == Algorithm.SL_TRIANGULATION)
       tool = (tool == Tool.POINTS) ? Tool.POLYGONS : Tool.POINTS;
@@ -118,13 +123,14 @@ void drawHelp() {
               + "[mouse drag] move point\n"
               + "[r] add 5 random points\n"
               + "[c] clear canvas\n"
-              + "[p] switch points or polygons\n"
+              + "[p] switch tool (points or polygons)\n"
               + "[n] none\n"
               + "[h] Gift-Wrapping\n" 
               + "[g] Graham-Scan\n"
               + "[t] Sweeping-Lane\n"
               + "[d] Delaunay\n"
-              + "[k] KD-Tree\n";
+              + "[k] KD-Tree\n"
+              + "[v] Voronoi";
   fill(0);
   text(help, width - textWidth(help) - 20, 20);
 }
@@ -158,15 +164,28 @@ void drawPolygon(List<Point> points) {
 }
 
 void drawEdges(List<Edge> edges) {
-    noFill();
-    stroke(DARK_COLOR);
+  noFill();
+  stroke(DARK_COLOR);
 
-    beginShape(LINES);
-    for (Edge edge : edges) {
-        vertex(edge.a.x, edge.a.y);
-        vertex(edge.b.x, edge.b.y);
-    }
-    endShape();
+  beginShape(LINES);
+  for (Edge edge : edges) {
+    vertex(edge.a.x, edge.a.y);
+    vertex(edge.b.x, edge.b.y);
+  }
+  endShape();
+}
+
+void drawTriangles(List<Triangle> triangles) {
+  noFill();
+  stroke(DARK_COLOR);
+
+  beginShape(TRIANGLES);
+  for (Triangle triangle : triangles) {
+    vertex(triangle.a.x, triangle.a.y);
+    vertex(triangle.b.x, triangle.b.y);
+    vertex(triangle.c.x, triangle.c.y);
+  }
+  endShape();
 }
 
 class Points extends ArrayList<Point> {  

@@ -12,19 +12,19 @@ List<Point> giftWrapping(List<Point> points) {
   
   Point a = new Point(pivot.x - 10, pivot.y);
   Point b = pivot;
-  Point c = find_minimal_angle(a, b, points);
+  Point c = findMinimalAngle(a, b, points);
   
   while(c != pivot) {
     hull.add(c);
 
     a = b;
     b = c;
-    c = find_minimal_angle(a, b, points);
+    c = findMinimalAngle(a, b, points);
   }
   return hull;
 }
 
-Point find_minimal_angle(Point a, Point b, List<Point> cs) {
+Point findMinimalAngle(Point a, Point b, List<Point> cs) {
   Point point = null;
   float minimum = Float.MAX_VALUE;
 

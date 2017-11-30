@@ -9,7 +9,7 @@ List<Point> grahamScan(List<Point> points) {
   Point pivot = Collections.max(points);
   Point xline = new Point(pivot.x - 1, pivot.y);
   
-  Iterator<Point> angles = compute_angles(xline, pivot, points);
+  Iterator<Point> angles = computeAngles(xline, pivot, points);
   
   List<Point> hull = new ArrayList();
   hull.add(pivot);
@@ -30,7 +30,7 @@ List<Point> grahamScan(List<Point> points) {
   return hull;
 }
 
-Iterator<Point> compute_angles(Point a, Point pivot, List<Point> cs) {
+Iterator<Point> computeAngles(Point a, Point pivot, List<Point> cs) {
   TreeMap<Float, Point> angles = new TreeMap();
 
   for (Point c1 : cs) {
@@ -40,7 +40,7 @@ Iterator<Point> compute_angles(Point a, Point pivot, List<Point> cs) {
     float angle = computeAngle(a, pivot, c1);
 
     Point c2 = angles.get(angle);
-    if (c2 == null || closerPoint(pivot, c1, c2) == c2)
+    if (c2 == null || pivot.closestPoint(c1, c2) == c2)
       angles.put(angle, c1);
   }
   return angles.values().iterator();

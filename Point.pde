@@ -1,4 +1,5 @@
 import java.util.Comparator;
+import java.util.List;
 
 class Point implements Comparable<Point> {
   public float x;
@@ -35,6 +36,18 @@ class Point implements Comparable<Point> {
   public float norm() { return sqrt(x * x + y * y); }
   
   public float distance(Point other) { return sub(other).norm(); }
+  
+  public Point closestPoint(Point p, Point q) {
+    return (Float.compare(distance(p), distance(q)) < 0) ? p : q;
+  }
+  
+  public Point closestPoint(List<Point> points) {
+    Point closest = points.get(0);
+    for (Point adept : points.subList(1, points.size())) {
+      closest = closestPoint(closest, adept);
+    }
+    return closest;
+  }
 }
 
 class XComparator implements Comparator<Point> {
@@ -67,32 +80,38 @@ boolean isCcw(Point a, Point b, Point c) {
   return Float.compare(crossProduct(a, b, c), 0) > 0;
 }
 
-Point closerPoint(Point from, Point toA, Point toB) {
-  float dA = from.distance(toA);
-  float dB = from.distance(toB);
-  return (Float.compare(dA, dB) < 0) ? toA : toB;
+class Edge {
+  public final Point a;
+  public final Point b;
+
+  public Edge(Point a, Point b) {
+    this.a = a;
+    this.b = b;
+  }
+  
+  public Edge reverse() {
+    return new Edge(b, a);
+  }
+  
+  @Override
+  public boolean equals(Object other) {
+    if (this == other)
+      return true;      
+    if (!(other instanceof Edge))
+      return false;
+    Edge edge = (Edge)other;
+    return a.equals(edge.a) && b.equals(edge.b);
+  }
 }
 
-class Edge {
-    Point a;
-    Point b;
+class Triangle {
+  public final Point a;
+  public final Point b;
+  public final Point c;
 
-    Edge(Point a, Point b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    Edge reverse() {
-        return new Edge(b, a);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other)
-            return true;      
-        if (!(other instanceof Edge))
-            return false;
-        Edge edge = (Edge)other;
-        return a.equals(edge.a) && b.equals(edge.b);
-    }
+  public Triangle(Point a, Point b, Point c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
 }
