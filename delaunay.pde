@@ -1,6 +1,44 @@
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+class Edge {
+  public final Point a;
+  public final Point b;
+
+  public Edge(Point a, Point b) {
+    this.a = a;
+    this.b = b;
+  }
+  
+  public Edge reverse() {
+    return new Edge(b, a);
+  }
+  
+  @Override
+  public boolean equals(Object other) {
+    if (this == other)
+      return true;      
+    if (!(other instanceof Edge))
+      return false;
+    Edge edge = (Edge)other;
+    return a.equals(edge.a) && b.equals(edge.b);
+  }
+}
+
+class Triangle {
+  public final Point A;
+  public final Point B;
+  public final Point C;
+  public final int tag;
+
+  public Triangle(Point A, Point B, Point C, int tag) {
+    this.A = A;
+    this.B = B;
+    this.C = C;
+    this.tag = tag;
+  }
+}
+
 class ActiveEdgeList extends ArrayDeque<Edge> {
   @Override
   public boolean add(Edge e) {
@@ -15,6 +53,7 @@ List<Triangle> delaunay(List<Point> points) {
     return new ArrayList();
   }
 
+  int tagger = 0;
   Queue<Edge> ael = new ActiveEdgeList();
   List<Triangle> triangulation = new ArrayList();
 
@@ -28,11 +67,11 @@ List<Triangle> delaunay(List<Point> points) {
         e = e.reverse();
         c = findDelaunayPoint(e, points);
     }
-
+    
     ael.add(e);
     ael.add(new Edge(e.b, c));
     ael.add(new Edge(c, e.a));
-    triangulation.add(new Triangle(a, b, c));
+    triangulation.add(new Triangle(a, b, c, tagger++));
   }
 
   while (!ael.isEmpty()) {
@@ -42,7 +81,7 @@ List<Triangle> delaunay(List<Point> points) {
     if (p != null) {
         ael.add(new Edge(e.a, p));
         ael.add(new Edge(p, e.b));
-        triangulation.add(new Triangle(e.a, p, e.b));
+        triangulation.add(new Triangle(e.a, p, e.b, tagger++));
     }
     ael.remove();
   }

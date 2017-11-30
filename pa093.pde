@@ -71,6 +71,11 @@ void draw() {
       break;
     }
     case VO_DIAGRAM: {
+      drawCaption("Voronoi diagram");
+      List<Triangle> triangulation = delaunay(points);
+      
+      drawGreyTriangles(triangulation);
+      drawEdges(voronoi(triangulation));
       break;
     }
   }
@@ -181,9 +186,22 @@ void drawTriangles(List<Triangle> triangles) {
 
   beginShape(TRIANGLES);
   for (Triangle triangle : triangles) {
-    vertex(triangle.a.x, triangle.a.y);
-    vertex(triangle.b.x, triangle.b.y);
-    vertex(triangle.c.x, triangle.c.y);
+    vertex(triangle.A.x, triangle.A.y);
+    vertex(triangle.B.x, triangle.B.y);
+    vertex(triangle.C.x, triangle.C.y);
+  }
+  endShape();
+}
+
+void drawGreyTriangles(List<Triangle> triangles) {
+  noFill();
+  stroke(200);
+
+  beginShape(TRIANGLES);
+  for (Triangle triangle : triangles) {
+    vertex(triangle.A.x, triangle.A.y);
+    vertex(triangle.B.x, triangle.B.y);
+    vertex(triangle.C.x, triangle.C.y);
   }
   endShape();
 }

@@ -35,6 +35,8 @@ class Point implements Comparable<Point> {
   public float dot(Point other) { return x * other.x + y * other.y; }
   public float norm() { return sqrt(x * x + y * y); }
   
+  public Point normalise() { return div(norm()); }
+  
   public float distance(Point other) { return sub(other).norm(); }
   
   public Point closestPoint(Point p, Point q) {
@@ -78,40 +80,4 @@ float crossProduct(Point a, Point b, Point c) {
 
 boolean isCcw(Point a, Point b, Point c) {
   return Float.compare(crossProduct(a, b, c), 0) > 0;
-}
-
-class Edge {
-  public final Point a;
-  public final Point b;
-
-  public Edge(Point a, Point b) {
-    this.a = a;
-    this.b = b;
-  }
-  
-  public Edge reverse() {
-    return new Edge(b, a);
-  }
-  
-  @Override
-  public boolean equals(Object other) {
-    if (this == other)
-      return true;      
-    if (!(other instanceof Edge))
-      return false;
-    Edge edge = (Edge)other;
-    return a.equals(edge.a) && b.equals(edge.b);
-  }
-}
-
-class Triangle {
-  public final Point a;
-  public final Point b;
-  public final Point c;
-
-  public Triangle(Point a, Point b, Point c) {
-    this.a = a;
-    this.b = b;
-    this.c = c;
-  }
 }
